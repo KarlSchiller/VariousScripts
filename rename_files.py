@@ -8,6 +8,7 @@
 import os
 import time
 import argparse
+from numpy import ceil, log10
 
 
 def get_filelist(input_folder):
@@ -18,7 +19,7 @@ def get_filelist(input_folder):
     # ignore folder
     for index,item in enumerate(filelist):
         if os.path.isdir(os.path.join(input_folder,item)):
-           files.pop(index)
+           filelist.pop(index)
 
     filelist.sort()
     return filelist
@@ -38,6 +39,12 @@ def rename_files(filelist, args):
     filenames = list(map(get_filename, filelist))
     current_index = 0
 
+    # length of counting number
+    if len(filenames) == 0 or len(filenames) ==1:
+        digits = 1
+    else:
+        digits = int(ceil(log10(len(filenames))))
+
     for index,item in enumerate(filelist):
 
         extension = ""
@@ -48,11 +55,13 @@ def rename_files(filelist, args):
         if not args.individual:
             if filenames[index-1]==filenames[index]:
                 current_index -= 1
-        new_file = os.path.join(args.input_folder,args.prefix + "{:0>4d}".format(current_index) + extension)
+
+
+        new_file = os.path.join(args.input_folder,args.prefix + "{:0>{}d}".format(current_index, digits) + extension)
 
         while os.path.isfile(new_file): # is there already a file named new_file?
               current_index += 1
-              new_file = os.path.join(args.input_folder,args.prefix + "{:0>4d}".format(current_index) + extension)
+              new_file = os.path.join(args.input_folder,args.prefix + "{:0>{}d}".format(current_index, digits) + extension)
 
         os.rename(old_file,new_file)
         if args.verbose:
@@ -78,7 +87,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A script to rename multiple files. \
             Files with the same name will be renamed same as well with default options.")
-    parser.add_argument("input_folder", type=str,
+    parser.add_argument("input_folder", type=str, default=".",
             help="Folder containing files to rename")
     group = parser.add_mutually_exclusive_group()   # either verbose or quiet
     group.add_argument("-v", "--verbose", action="store_true",
