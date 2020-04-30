@@ -8,36 +8,47 @@ from tkinter import Tk  # get monitor size
 
 def main(args):
 
+    win = cv2.namedWindow('ColorPicker', cv2.WINDOW_NORMAL)
+    if args.verbose:
+        print("Read image "+args.imagepath)
+        print("Zoom in      <CTRL>+<+>")
+        print("Zoom out     <CTRL>+<->")
+        print("Save         <CTRL>+<s>")
+        print("Quit         <q>")
     img = cv2.imread(args.imagepath, 1)   # import image colored withouth transparency
     # (:,:,0) blue channel
     # (:,:,1) green channel
     # (:,:,2) red channel
-    print('Image dimensions : ', img.shape)
-    img_scale = img.shape[0]/img.shape[1]   # width/height
 
-    # get monitor size
-    root = Tk()
-    monitor_width = root.winfo_screenwidth()
-    monitor_height = root.winfo_screenheight()
-    print('monitor width  ', monitor_width)
-    print('monitor height ', monitor_height)
+    #  print('Image dimensions : ', img.shape)
+    #  img_scale = img.shape[0]/img.shape[1]   # width/height
 
-    # rescale image to adequate size
-    # 90% of monitor width or height, depending which side is longer
-    height = int(0.9*monitor_height)
-    width = int(height/img_scale)
-    if width > (0.95*monitor_width):
-        print("TEST")
-        width = int(0.9*monitor_width)
-        height = int(width*img_scale)
-    img = cv2.resize(img, (width, height))
+    # # get monitor size
+    # root = Tk()
+    # monitor_width = root.winfo_screenwidth()
+    # monitor_height = root.winfo_screenheight()
+    # print('monitor width  ', monitor_width)
+    # print('monitor height ', monitor_height)
 
-    # just show image
-    cv2.imshow('Test', img)
-    print("\nPress any key to quit\n")
-    key = cv2.waitKey(0) & 0xFF
-    cv2.destroyWindow('Test')
-    print("pressed key :  ", key)
+    # # rescale image to adequate size
+    # # 90% of monitor width or height, depending which side is longer
+    # height = int(0.9*monitor_height)
+    # width = int(height/img_scale)
+    # if width > (0.95*monitor_width):
+    #     print("TEST")
+    #     width = int(0.9*monitor_width)
+    #     height = int(width*img_scale)
+    # img = cv2.resize(img, (width, height))
+
+    # show image
+    cv2.imshow('ColorPicker', img)
+    terminated = False
+    while not terminated:
+        if (cv2.waitKey(0) & 0xFF == 113):
+            cv2.destroyWindow('ColorPicker')
+            terminated = True
+            if args.verbose:
+                print("<q> pressed, program terminated")
 
 
 if __name__ == '__main__':
@@ -51,5 +62,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
-    pass
+    try:
+        main(args)
+    except KeyboardInterrupt:
+        if args.verbose:
+            print('Program terminated by KeyboardInterrupt')
