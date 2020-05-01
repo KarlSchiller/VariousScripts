@@ -10,3 +10,4 @@ Consists of:
 | rename\_files.py | Rename and number multiple files in a directory |
 | sort\_files.py | Rename and sort multiple files by their time stamp |
 | tab2tex.py | A function to generate a LaTeX table from python arrays |
+| Switch.py | Add case statement as in C languages |
